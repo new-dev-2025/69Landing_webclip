@@ -337,7 +337,7 @@
         <div class="os-specific browser-footer">
             <div class="qr-section">
                 <div class="qr-code">
-                    <div style="width: 80px; height: 80px; background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjMDAwIi8+CjxyZWN0IHg9IjUiIHk9IjUiIHdpZHRoPSI3MCIgaGVpZ2h0PSI3MCIgZmlsbD0iI2ZmZiIvPgo8cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=') center/cover;"></div>
+                    <img id="dynamic-qr" src="" alt="QR Code" style="width: 80px; height: 80px; border-radius: 5px;" />
                 </div>
                 <div class="down-txt-image">
                     <img src="down-txt.png" alt="Download Text" style="max-height: 80px; width: auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -365,6 +365,33 @@
         function initializePage() {
             const os = detectOS();
             document.body.className = `os-${os}`;
+            
+            // Generate QR code for browser view
+            if (os === 'browser') {
+                generateQRCode();
+            }
+        }
+
+        // Generate QR code based on current URL
+        function generateQRCode() {
+            const currentURL = window.location.origin + window.location.pathname;
+            const qrImg = document.getElementById('dynamic-qr');
+            
+            if (qrImg) {
+                // Using QR Server API to generate QR code
+                const qrURL = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(currentURL)}`;
+                qrImg.src = qrURL;
+                
+                // Fallback: if QR service fails, show a simple placeholder
+                qrImg.onerror = function() {
+                    this.style.display = 'none';
+                    this.parentElement.innerHTML = `
+                        <div style="width: 80px; height: 80px; background: white; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #333; text-align: center; padding: 5px;">
+                            扫码访问<br>${window.location.hostname}
+                        </div>
+                    `;
+                };
+            }
         }
 
         // Download functions
