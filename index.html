@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Download</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f161c, #081016);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgb(255, 255, 255);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        .logo {
+            height: 40px;
+            width: auto;
+        }
+
+        /* Body */
+        .main-content {
+            flex: 1;
+            padding: 100px 20px 120px;
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        .body-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .download-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .qr-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .qr-code {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .qr-text {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .ios-download {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            margin: 10px 0;
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 10px auto;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            min-height: 50px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .ios-download.ios-btn {
+            background-image: url('ios.png');
+            background-color: transparent;
+            border: none;
+            text-indent: -9999px; /* Hide text when image is available */
+        }
+
+        .ios-download:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .download-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            margin: 10px auto;
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            min-height: 50px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .download-btn.ios-btn {
+            background-image: url('ios.png');
+            border: none;
+            background-color: transparent;
+        }
+
+        .download-btn.android-btn {
+            background-image: url('android.png');
+            background-color: transparent;
+            border: none;
+            text-indent: -9999px; /* Hide text when image is available */
+        }
+
+        .download-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .install-note {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+        }
+
+        .version-info {
+            background: #00bfff;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        /* iOS Footer specific styles */
+        .ios-footer {
+            text-align: center;
+        }
+        
+        /* Android Footer specific styles */
+        .android-footer {
+            text-align: center;
+        }
+        
+        .android-footer .download-buttons {
+            justify-content: center;
+        }
+        
+        /* OS Detection Styles */
+        .os-specific {
+            display: none;
+        }
+
+        .os-ios .ios-footer,
+        .os-android .android-footer,
+        .os-browser .browser-footer {
+            display: block;
+        }
+
+        /* Browser Mobile View - Fixed Mobile Layout */
+        .os-browser {
+            max-width: 375px;
+            margin: 0 auto;
+            overflow-x: hidden;
+        }
+
+        .os-browser .main-content {
+            padding: 80px 20px 120px;
+            max-width: 375px;
+        }
+
+        .os-browser .body-image {
+            max-width: 335px;
+            width: 100%;
+        }
+
+        .os-browser .header {
+            max-width: 375px;
+            margin: 0 auto;
+        }
+
+        .os-browser .footer {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            right: auto;
+            transform: translateX(-50%);
+            max-width: 375px;
+            width: 375px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .os-browser .qr-section {
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .os-browser .qr-code {
+            width: 80px;
+            height: 80px;
+        }
+
+        .os-browser .down-txt-image img {
+            max-height: 60px;
+            max-width: 150px;
+            object-fit: contain;
+        }
+
+        @media (max-width: 768px) {
+            .qr-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .download-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .download-btn {
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.png" alt="Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+            <span style="display: none; font-size: 24px; font-weight: bold; color: #333;">📱</span>
+            <div style="color: #333; line-height: 1.2;">
+                <div style="font-size: 18px; font-weight: bold;">69黑料社区</div>
+                <div style="font-size: 12px; opacity: 0.7;">热门黑料精彩视频免费看</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <img src="body.png" alt="App Preview" class="body-image" onclick="handleImageClick()" style="cursor: pointer;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <div style="display: none; padding: 50px; background: rgba(255,255,255,0.1); border-radius: 20px; margin: 20px; cursor: pointer;" onclick="handleImageClick()">
+            <h2>App Preview</h2>
+            <p>Please add body.png to display the app preview image</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <!-- iOS Footer -->
+        <div class="os-specific ios-footer">
+            <a href="#" class="ios-download ios-btn" onclick="downloadApp()">
+                🍎 轻量版下载
+            </a>
+            <div class="subtitle">苹果手机请使用自带Safari浏览器</div>
+        </div>
+
+        <!-- Android Footer -->
+        <div class="os-specific android-footer">
+            <div class="download-buttons">
+                <a href="#" class="download-btn android-btn" onclick="downloadApp('high')" title="高速下载">
+                </a>
+            </div>
+            
+            <div class="install-note">安卓安装包爆毒解决方案*下载后开启飞行模式安装</div>
+        </div>
+
+        <!-- Browser Footer -->
+        <div class="os-specific browser-footer">
+            <div class="qr-section">
+                <div class="qr-code">
+                    <div style="width: 80px; height: 80px; background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjMDAwIi8+CjxyZWN0IHg9IjUiIHk9IjUiIHdpZHRoPSI3MCIgaGVpZ2h0PSI3MCIgZmlsbD0iI2ZmZiIvPgo8cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=') center/cover;"></div>
+                </div>
+                <div class="down-txt-image">
+                    <img src="down-txt.png" alt="Download Text" style="max-height: 80px; width: auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display: none; font-size: 16px; color: rgba(255, 255, 255, 0.9);">📱 扫码下载</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // OS Detection
+        function detectOS() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return 'ios';
+            } else if (/android/i.test(userAgent)) {
+                return 'android';
+            } else {
+                return 'browser';
+            }
+        }
+
+        // Initialize page based on OS
+        function initializePage() {
+            const os = detectOS();
+            document.body.className = `os-${os}`;
+        }
+
+        // Download functions
+        function downloadApp(type = 'default') {
+            const os = detectOS();
+            
+            switch(os) {
+                case 'ios':
+                    // iOS download logic - redirect to ios.html page
+                    window.location.href = 'iosPage/page/ios.html';
+                    break;
+                case 'android':
+                    if (type === 'high') {
+                        alert('正在准备Android高速下载...');
+                        // window.location.href = 'your-android-high-speed-link';
+                    } else {
+                        alert('正在准备Android备用下载...');
+                        // window.location.href = 'your-android-backup-link';
+                    }
+                    break;
+                default:
+                    alert('正在准备浏览器版本...');
+                    // window.location.href = 'your-web-app-link';
+            }
+        }
+
+        // Handle body image click
+        function handleImageClick() {
+            const os = detectOS();
+            
+            switch(os) {
+                case 'ios':
+                    // iOS - redirect to ios.html page
+                    window.location.href = 'iosPage/page/ios.html';
+                    break;
+                case 'android':
+                    // Android - download APK
+                    window.location.href = 'https://expo.dev/artifacts/eas/pLEY7Q5sceWDXK5hVk5RpG.apk';
+                    break;
+                default:
+                    // Browser - show options or default action
+                    alert('请在移动设备上访问以下载应用');
+            }
+        }
+
+        function openWebApp() {
+            alert('正在打开网页版应用...');
+            // window.open('your-web-app-url', '_blank');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializePage);
+
+        // Handle image loading for buttons
+        function checkButtonImages() {
+            // Check iOS button images
+            const iosButtons = document.querySelectorAll('.ios-btn');
+            iosButtons.forEach(button => {
+                const img = new Image();
+                img.onload = function() {
+                    // Image loaded successfully, keep the background image
+                };
+                img.onerror = function() {
+                    // Image failed to load, remove ios-btn class to show text
+                    button.classList.remove('ios-btn');
+                };
+                img.src = 'ios.png';
+            });
+
+            // Check Android button images
+            const androidButtons = document.querySelectorAll('.android-btn');
+            androidButtons.forEach(button => {
+                const img = new Image();
+                img.onload = function() {
+                    // Image loaded successfully, keep the background image
+                };
+                img.onerror = function() {
+                    // Image failed to load, remove android-btn class to show text/border
+                    button.classList.remove('android-btn');
+                    button.textContent = button.title; // Use title as fallback text
+                };
+                img.src = 'android.png';
+            });
+        }
+
+        // Handle image error
+        window.addEventListener('load', function() {
+            const img = document.querySelector('.body-image');
+            if (img && !img.complete) {
+                img.style.display = 'none';
+                img.nextElementSibling.style.display = 'block';
+            }
+            
+            // Check button images after page load
+            checkButtonImages();
+        });
+    </script>
+</body>
+</html>
