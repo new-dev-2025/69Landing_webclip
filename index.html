@@ -394,27 +394,34 @@
             }
         }
 
+        // Track download event
+        function trackDownload(type) {
+            fetch(`https://api.sonaku.vip/api/landing-downloads/track?app_type=${type}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }).catch(function(e) {
+                // Ignore errors
+            });
+        }
+
         // Download functions
         function downloadApp(type = 'default') {
             const os = detectOS();
-            
-            switch(os) {
-                case 'ios':
-                    // iOS download logic - redirect to ios.html page
-                    window.location.href = 'iosPage/page/ios.html';
-                    break;
-                case 'android':
-                    if (type === 'high') {
-                        // Android high speed download - use the provided APK link
-                        window.location.href = 'https://expo.dev/artifacts/eas/2rHNV6JDsZ2e9f7CFcVtTK.apk';
-                    } else {
-                        // Android backup download - use the same APK link
-                        window.location.href = 'https://expo.dev/artifacts/eas/2rHNV6JDsZ2e9f7CFcVtTK.apk';
-                    }
-                    break;
-                default:
-                    alert('正在准备浏览器版本...');
-                    // window.location.href = 'your-web-app-link';
+            if (os === 'ios') {
+                trackDownload('ipa');
+                window.location.href = 'iosPage/page/ios.html';
+            } else if (os === 'android') {
+                trackDownload('apk');
+                if (type === 'high') {
+                    window.location.href = 'https://expo.dev/artifacts/eas/q9tTFRbVR8h5x7cR9jZ7Lb.apk';
+                } else {
+                    window.location.href = 'https://expo.dev/artifacts/eas/q9tTFRbVR8h5x7cR9jZ7Lb.apk';
+                }
+            } else {
+                alert('正在准备浏览器版本...');
+                // window.location.href = 'your-web-app-link';
             }
         }
 
