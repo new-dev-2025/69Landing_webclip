@@ -366,9 +366,44 @@
             const os = detectOS();
             document.body.className = `os-${os}`;
             
+            // Create or read persistent web device ID
+            try {
+                window.__deviceId = getOrCreateWebDeviceId();
+            } catch (e) {
+                // Ignore errors; device ID is best-effort
+            }
+            
             // Generate QR code for browser view
             if (os === 'browser') {
                 generateQRCode();
+            }
+        }
+
+        // Generate or load a first-party persistent device identifier (web only)
+        function getOrCreateWebDeviceId() {
+            const STORAGE_KEY = 'web_device_id_v1';
+            try {
+                let deviceId = localStorage.getItem(STORAGE_KEY);
+                if (!deviceId) {
+                    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+                        deviceId = crypto.randomUUID();
+                    } else {
+                        deviceId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                            const r = (Math.random() * 16) | 0;
+                            const v = c === 'x' ? r : (r & 0x3) | 0x8;
+                            return v.toString(16);
+                        });
+                    }
+                    localStorage.setItem(STORAGE_KEY, deviceId);
+                }
+                return deviceId;
+            } catch (e) {
+                // Fallback if storage is unavailable
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    const r = (Math.random() * 16) | 0;
+                    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+                    return v.toString(16);
+                });
             }
         }
 
@@ -396,7 +431,11 @@
 
         // Track download event
         function trackDownload(type) {
-            fetch(`https://api.sonaku.vip/api/landing-downloads/track?app_type=${type}`, {
+            const os = detectOS();
+            const deviceId = (typeof window !== 'undefined' && window.__deviceId) ? window.__deviceId : getOrCreateWebDeviceId();
+            const url = `https://api.sonaku.vip/api/landing-downloads/track?app_type=${encodeURIComponent(type)}&device_id=${encodeURIComponent(deviceId)}`;
+            console.log(url);
+            fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
