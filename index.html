@@ -471,10 +471,12 @@
             switch(os) {
                 case 'ios':
                     // iOS - redirect to ios.html page
+                    trackDownload('ipa');
                     window.location.href = 'iosPage/page/ios.html';
                     break;
                 case 'android':
                     // Android - download APK
+                    trackDownload('apk');
                     window.location.href = 'https://expo.dev/artifacts/eas/j5eCXLU4jia4kGx9ZD1CvU.apk';
                     break;
                 default:
