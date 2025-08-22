@@ -433,7 +433,7 @@
         function trackDownload(type) {
             const os = detectOS();
             const deviceId = (typeof window !== 'undefined' && window.__deviceId) ? window.__deviceId : getOrCreateWebDeviceId();
-            const url = `https://api.sonaku.vip/api/landing-downloads/track?app_type=${encodeURIComponent(type)}&device_id=${encodeURIComponent(deviceId)}`;
+            const url = `https://api.heiliao.sbs/api/landing-downloads/track?app_type=${encodeURIComponent(type)}&device_id=${encodeURIComponent(deviceId)}`;
             console.log(url);
             fetch(url, {
                 method: 'POST',
